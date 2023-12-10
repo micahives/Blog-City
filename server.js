@@ -19,8 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 
-app.get('/', (req, res) => {
-    // serves the body of the page "main.handlebars" to the container, "index.handlebars"
+app.get('/partials', (req, res) => {
+    // serves the body of the page "main.hbs" to the container, "index.hbs"
     res.render('main', { layout : 'index' });
 });
     
