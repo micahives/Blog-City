@@ -39,6 +39,7 @@ const sess = {
 };
 
 app.use(session(sess));
+app.use(routes);
 
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () =>
