@@ -133,3 +133,6 @@ dist
 # misc.
 .DS_Store
 main.css.map
+./public/css/main.css
+main.css
+.vscode

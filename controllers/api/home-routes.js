@@ -1,12 +1,8 @@
 const router = require('express').Router();
 
-// Login route
-router.get('/login', (req, res) => {
-    if (req.session.loggedIn) {
-      res.redirect('/');
-      return;
-    }
-    res.render('login');
-  });
+router.get('/', async (req, res) => {
+  // TODO: Render template with Sequelize data
+  res.render('homepage');
+});
   
   module.exports = router;
