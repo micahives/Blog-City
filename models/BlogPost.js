@@ -12,7 +12,7 @@ BlogPost.init({
       },
     title: {
         type: DataTypes.STRING(75),
-        allowNull: falase
+        allowNull: false
     },
     summary: {
         type: DataTypes.TEXT
@@ -20,11 +20,9 @@ BlogPost.init({
     author: {
         type: DataTypes.TEXT
     },
-    createdOn: {
-        type: DataTypes.DATE    
-    },
-    updatedOn: {
-        type: DataTypes.DATE
+    postDate: {
+        type: DataTypes.DATE ,
+        defaultValue: DataTypes.NOW   
     }
     },
     {

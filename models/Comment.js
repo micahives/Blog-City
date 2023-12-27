@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/connection');
+const sequelize = require('../config/connection');
 
 class Comment extends Model {}
 
@@ -12,16 +12,10 @@ Comment.init({
       },
     summary: {
         type: DataTypes.TEXT,
-        allowNull: falase
+        allowNull: false
     },
     author: {
         type: DataTypes.TEXT
-    },
-    createdOn: {
-        type: DataTypes.DATE    
-    },
-    updatedOn: {
-        type: DataTypes.DATE
     }
     },
     {
