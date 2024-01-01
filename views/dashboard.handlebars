@@ -14,9 +14,14 @@
 
 <div id="blogPostsContainer" class="flex flex-wrap justify-center">
     {{#each blogPosts}}
-        <div class="bg-white rounded-md overflow-hidden shadow-lg m-4 p-4 w-64 h-72 cursor-pointer transition-transform transform hover:scale-105 flex items-center justify-center border border-gray-300"">
-            <h2 class="text-lg font-semibold text-primary-700 overflow-hidden h-24 w-48 text-center flex items-center justify-center">{{this.dataValues.title}}</h2>
+    <a href="/dashboard/blog-post/{{this.dataValues.id}}">
+        <div class="bg-white rounded-md overflow-hidden shadow-lg m-4 p-4 w-64 h-72 cursor-pointer transition-transform transform hover:scale-105 flex flex-col items-center justify-center border border-gray-300">
+            <h2 class="text-lg font-semibold text-primary-700 overflow-hidden h-24 w-48 flex-grow flex items-center justify-center">{{ this.dataValues.title }}</h2>
+            <p class="text-sm text-gray-500 text-center">
+                by <strong>{{ this.dataValues.author }}</strong>
+            </p>
         </div>
+    </a>
     {{/each}}
 </div>
 
