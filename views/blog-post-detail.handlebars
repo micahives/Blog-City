@@ -17,13 +17,36 @@
     <!-- Summary -->
     <p class="text-base text-gray-700">{{ blogPost.dataValues.summary }}</p>
 
-    <!-- Delete and Edit Buttons -->
+   <!-- Delete, Edit, and Back to Dashboard Buttons -->
+   {{#if (eq source 'dashboard')}}
     <div class="flex justify-between mt-12">
       <button id="deleteButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300">
         Delete
       </button>
       <button id="editButton" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
         Edit
+      </button>
+      <a href="/dashboard" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-300">
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{{/if}}
+
+{{!-- edit fields --}}
+<div id="editFields" class="hidden mt-4 max-w-md mx-auto bg-white shadow-md overflow-hidden sm:rounded-lg">
+  <div class="px-6 py-4">
+    <label for="editTitle" class="text-lg font-semibold text-primary-700">Edit Title:</label>
+    <input type="text" id="editTitle" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-primary-500" value="{{ blogPost.dataValues.title }}">
+    <label for="editSummary" class="mt-4 text-lg font-semibold text-primary-700">Edit Summary:</label>
+    <textarea id="editSummary" class="w-full h-32 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-primary-500">{{ blogPost.dataValues.summary }}</textarea>
+    <div class="mt-4 flex justify-end">
+      <button id="saveChangesButton" class="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:ring focus:border-primary-300">
+        Save Changes
+      </button>
+      <button id="cancelEditButton" class="ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-500">
+        Cancel
       </button>
     </div>
   </div>
@@ -126,11 +149,51 @@
       closeDeleteModal();
     });
 
-    document.getElementById('editButton').addEventListener('click', function() {
-      console.log('Edit button clicked');
-    });
+        const editButton = document.getElementById('editButton');
+    const editFields = document.getElementById('editFields');
+    const cancelEditButton = document.getElementById('cancelEditButton');
 
-    console.log('Rendering blog post detail template');
+    if (editButton) {
+      editButton.addEventListener('click', function () {
+        // Show the edit fields
+        editFields.classList.remove('hidden');
+      });
+    }
+
+    if (cancelEditButton) {
+      cancelEditButton.addEventListener('click', function () {
+        // Hide the edit fields
+        editFields.classList.add('hidden');
+      });
+    }
+
+    const saveChangesButton = document.getElementById('saveChangesButton');
+
+    if (saveChangesButton) {
+      saveChangesButton.addEventListener('click', async function () {
+        const updatedTitle = document.getElementById('editTitle').value;
+        const updatedSummary = document.getElementById('editSummary').value;
+        const postId = {{ blogPost.dataValues.id }};
+
+        try {
+          const response = await fetch(`/dashboard/blog-post/${postId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title: updatedTitle, summary: updatedSummary }),
+          });
+
+          if (response.ok) {
+            window.location.reload(); // Reload the page after successful update
+          } else {
+            console.error('Error updating blog post:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error updating blog post:', error.message);
+        }
+      });
+    }
   });
 </script>
 
