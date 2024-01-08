@@ -23,6 +23,13 @@ BlogPost.init({
     postDate: {
         type: DataTypes.DATE ,
         defaultValue: DataTypes.NOW   
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'user',
+            key: 'id',
+        }
     }
     },
     {
@@ -32,6 +39,6 @@ BlogPost.init({
     underscored: true,
     modelName: 'blogPost'
     }
-    );
+);
 
 module.exports = BlogPost;

@@ -12,10 +12,16 @@ Comment.init({
       },
     summary: {
         type: DataTypes.TEXT,
-        allowNull: false
     },
     author: {
         type: DataTypes.TEXT
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'user',
+            key: 'id',
+        }
     }
     },
     {

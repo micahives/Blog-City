@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const BlogPost = require('../models/BlogPost');
+const Comment = require('../models/Comment');
 
 router.get('/', async (req, res) => {
     try {
@@ -11,7 +12,9 @@ router.get('/', async (req, res) => {
         where: {
           author: username,
         },
+        include: Comment, // Include associated comments
       });
+      
       console.log('Rendering dashboard with blogPosts:', blogPosts);
       res.render('dashboard', { loggedIn, username, blogPosts });
     } catch (err) {
@@ -52,7 +55,10 @@ router.get('/blog-post/:id', async (req, res) => {
     try {
         const loggedIn = req.session.loggedIn || false;
         const blogPostId = req.params.id;
-        const blogPost = await BlogPost.findByPk(blogPostId);
+        const username = req.session.username;
+        const blogPost = await BlogPost.findByPk(blogPostId, {
+          include: [{model: Comment}],
+      });
         // source parameter (dashboard or homepage)
         const source = req.query.source || 'unknown';
   
@@ -61,7 +67,7 @@ router.get('/blog-post/:id', async (req, res) => {
             return;
         }
 
-        res.render('blog-post-detail', { loggedIn, blogPost, source });
+        res.render('blog-post-detail', { loggedIn, blogPost, source, username });
     } catch (err) {
         console.error(err);
         res.status(500).json(err);
@@ -113,4 +119,23 @@ router.put('/blog-post/:id', async (req, res) => {
   }
 });
 
-  module.exports = router;
+router.post('/blog-post/:id/comment', async (req, res) => {
+  try {
+    console.log("route hit");
+    const { summary, author } = req.body;
+    const blogPostId = req.params.id;
+
+    const newComment = await Comment.create({
+      summary,
+      author,
+      blog_post_id: blogPostId,
+    });
+
+    res.status(201).json({ message: 'Comment created successfully', comment: newComment });
+  } catch (error) {
+    console.error('Error creating comment:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+  
+module.exports = router;

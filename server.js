@@ -11,7 +11,16 @@ const hbs = exphbs.create({
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
-  helpers: helpers
+  helpers: {
+    ...helpers,
+    isNotEmpty: function (value, options) {
+      if (value && value.summary && value.author) {
+        return options.fn(this);
+      } else {
+        return options.inverse ? options.inverse(this) : '';
+      }
+    }
+  }
 });
 
 const routes = require('./controllers');

@@ -17,6 +17,7 @@
     <!-- Summary -->
     <p class="text-base text-gray-700">{{ blogPost.dataValues.summary }}</p>
 
+
    <!-- Delete, Edit, and Back to Dashboard Buttons -->
    {{#if (eq source 'dashboard')}}
     <div class="flex justify-between mt-12">
@@ -94,10 +95,42 @@
   </div>
 </div>
 
+<!-- Comments Section -->
+<div id="commentsContainer" class="mt-8">
+  <h3 class="text-lg font-semibold text-primary-700">Comments</h3>
+  
+  {{#each blogPost.dataValues.comments}}
+    {{#each this}}
+      <div class="mt-4 border-t border-gray-300">
+        <p class="text-base text-gray-700">{{ this.summary }}</p>
+        <div class="text-sm text-gray-500">
+          by <strong>{{ this.author }}</strong>
+        </div>
+      </div>
+    {{/each}}
+  {{/each}}
+</div>
+
+<!-- Comment Submission Form -->
+<div class="mt-8">
+  <h3 class="text-lg font-semibold text-primary-700">Add a Comment</h3>
+  <form id="commentForm">
+    <textarea id="commentText" class="w-full h-32 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-primary-500" placeholder="Write your comment here"></textarea>
+    <button type="button" id="submitCommentButton" class="mt-4 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:ring focus:border-primary-300">
+      Submit Comment
+    </button>
+  </form>
+</div>
+
+
 <div id="confirmationMessage" class="hidden"></div>
 
+<input type="hidden" id="authorValue" value="{{ blogPost.dataValues.author }}">
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
+    // Set to store rendered comment IDs
+    let renderedComments = new Set();
 
     function openDeleteModal() {
       const modal = document.getElementById('deleteConfirmationModal');
@@ -109,15 +142,15 @@
       modal.classList.add('hidden');
     }
 
-    document.getElementById('deleteButton').addEventListener('click', function() {
+    document.getElementById('deleteButton').addEventListener('click', function () {
       openDeleteModal();
     });
 
-    document.getElementById('confirmDeleteButton').addEventListener('click', function() {
+    document.getElementById('confirmDeleteButton').addEventListener('click', function () {
       closeDeleteModal();
 
       const postId = {{ blogPost.dataValues.id }};
-      
+
       fetch(`/dashboard/blog-post/${postId}`, {
         method: 'DELETE',
         headers: {
@@ -132,7 +165,7 @@
         })
         .then(data => {
           console.log(data.message);
-          
+
           const confirmationMessage = document.getElementById('confirmationMessage');
           confirmationMessage.innerText = 'Blog post deleted successfully!';
           confirmationMessage.classList.remove('hidden');
@@ -145,11 +178,11 @@
         });
     });
 
-    document.getElementById('cancelDeleteButton').addEventListener('click', function() {
+    document.getElementById('cancelDeleteButton').addEventListener('click', function () {
       closeDeleteModal();
     });
 
-        const editButton = document.getElementById('editButton');
+    const editButton = document.getElementById('editButton');
     const editFields = document.getElementById('editFields');
     const cancelEditButton = document.getElementById('cancelEditButton');
 
@@ -185,12 +218,63 @@
           });
 
           if (response.ok) {
-            window.location.reload(); // Reload the page after successful update
+            window.location.reload(); // Reload the page after a successful update
           } else {
             console.error('Error updating blog post:', response.statusText);
           }
         } catch (error) {
           console.error('Error updating blog post:', error.message);
+        }
+      });
+    }
+
+    const submitCommentButton = document.getElementById('submitCommentButton');
+
+    if (submitCommentButton) {
+      submitCommentButton.addEventListener('click', async function () {
+        const commentText = document.getElementById('commentText').value;
+        const postId = {{ blogPost.dataValues.id }};
+        const author = document.getElementById('authorValue').value;
+
+        console.log('Submitting comment:', commentText, 'for post ID:', postId);
+
+        try {
+          const response = await fetch(`/dashboard/blog-post/${postId}/comment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ summary: commentText, author: author }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+
+          const newComment = await response.json();
+          console.log('New comment:', newComment);
+
+          // Check if the comment ID is already rendered on the page
+          if (!renderedComments.has(newComment.comment.id)) {
+            const commentsContainer = document.getElementById('commentsContainer');
+            const newCommentDiv = document.createElement('div');
+            newCommentDiv.classList.add('mt-4', 'border-t', 'border-gray-300');
+            newCommentDiv.innerHTML = `
+              <p class="text-base text-gray-700">${newComment.comment.summary}</p>
+              <div class="text-sm text-gray-500">
+                by <strong>${newComment.comment.author || 'Unknown Author'}</strong>
+              </div>
+            `;
+            commentsContainer.appendChild(newCommentDiv);
+
+            // Add the comment ID to the set of rendered comments
+            renderedComments.add(newComment.comment.id);
+          }
+
+          // Clear the comment text area
+          document.getElementById('commentText').value = '';
+        } catch (error) {
+          console.error('Error submitting comment:', error.message);
         }
       });
     }
