@@ -10,10 +10,13 @@ router.post('/signup', async (req, res) => {
       password: req.body.password,
     });
 
-    req.session.save(() => {
-      req.session.user_id = dbUserData.id;
-      req.session.loggedIn = true;
+    // Set session variables
+    req.session.user_id = dbUserData.id;
+    req.session.loggedIn = true;
+    req.session.username = dbUserData.username;
 
+    // Save the session
+    req.session.save(() => {
       res.status(200).json(dbUserData);
     });
   } catch (err) {
@@ -21,6 +24,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
 
 // Login
 router.post('/login', async (req, res) => {
