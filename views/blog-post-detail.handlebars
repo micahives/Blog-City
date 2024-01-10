@@ -17,7 +17,7 @@
     <!-- Summary -->
     <p class="text-base text-gray-700">{{ blogPost.dataValues.summary }}</p>
 
-
+  
    <!-- Delete, Edit, and Back to Dashboard Buttons -->
    {{#if (eq source 'dashboard')}}
     <div class="flex justify-between mt-12">
@@ -228,7 +228,7 @@
       });
     }
 
-    const submitCommentButton = document.getElementById('submitCommentButton');
+  const submitCommentButton = document.getElementById('submitCommentButton');
 
     if (submitCommentButton) {
       submitCommentButton.addEventListener('click', async function () {
@@ -254,25 +254,23 @@
           const newComment = await response.json();
           console.log('New comment:', newComment);
 
-          // Check if the comment ID is already rendered on the page
-          if (!renderedComments.has(newComment.comment.id)) {
-            const commentsContainer = document.getElementById('commentsContainer');
-            const newCommentDiv = document.createElement('div');
-            newCommentDiv.classList.add('mt-4', 'border-t', 'border-gray-300');
-            newCommentDiv.innerHTML = `
-              <p class="text-base text-gray-700">${newComment.comment.summary}</p>
-              <div class="text-sm text-gray-500">
-                by <strong>${newComment.comment.author || 'Unknown Author'}</strong>
-              </div>
-            `;
-            commentsContainer.appendChild(newCommentDiv);
-
-            // Add the comment ID to the set of rendered comments
-            renderedComments.add(newComment.comment.id);
-          }
+          // Append the new comment to the comments section
+          const commentsContainer = document.getElementById('commentsContainer');
+          const newCommentDiv = document.createElement('div');
+          newCommentDiv.classList.add('mt-4', 'border-t', 'border-gray-300');
+          newCommentDiv.innerHTML = `
+            <p class="text-base text-gray-700">${newComment.comment.summary}</p>
+            <div class="text-sm text-gray-500">
+              by <strong>${newComment.comment.author || 'Unknown Author'}</strong>
+            </div>
+          `;
+          commentsContainer.appendChild(newCommentDiv);
 
           // Clear the comment text area
           document.getElementById('commentText').value = '';
+
+          // Add the comment ID to the set of rendered comments
+          renderedComments.add(newComment.comment.id);
         } catch (error) {
           console.error('Error submitting comment:', error.message);
         }

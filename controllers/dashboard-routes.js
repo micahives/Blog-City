@@ -59,6 +59,8 @@ router.get('/blog-post/:id', async (req, res) => {
         const blogPost = await BlogPost.findByPk(blogPostId, {
           include: [{model: Comment}],
       });
+
+        console.log('Retrieved blog post with comments:', blogPost);
         // source parameter (dashboard or homepage)
         const source = req.query.source || 'unknown';
   
