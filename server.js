@@ -38,7 +38,7 @@ hbs.handlebars.registerPartial('blogPost', '');
 app.use(express.static(path.join(__dirname, 'public')));
 
 const sess = {
-  secret: process.env.SESSION_SECRET,
+  secret: 'SecretCookie49!',
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // expires after one day
   },
